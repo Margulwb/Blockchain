@@ -56,10 +56,31 @@ def mine_block(blockchain, block):
         else:
             block['nonce'] += 1
 
+def validate_transaction(transaction):
+    # Example validation logic for a transaction
+    if 'sender' not in transaction or 'receiver' not in transaction or 'amount' not in transaction:
+        return False
+    if transaction['amount'] <= 0:
+        return False
+    return True
+
+def create_block_with_transaction(transaction, blockNo=0, previousHash=0x0, nonce=0, next_block=None):
+    if not validate_transaction(transaction):
+        raise ValueError("Invalid transaction")
+    return create_block(transaction, blockNo, previousHash, nonce, next_block)
+
 blockchain = create_blockchain()
 for n in range(5):
     mine_block(blockchain, create_block("Block " + str(n + 1)))
     print(blockchain)
+
+# Example usage of the smart contract
+transaction = {'sender': 'Alice', 'receiver': 'Bob', 'amount': 50}
+try:
+    new_block = create_block_with_transaction(transaction)
+    mine_block(blockchain, new_block)
+except ValueError as e:
+    print(f"Transaction failed: {e}")
 
 current_block = blockchain['head']
 while current_block is not None:
